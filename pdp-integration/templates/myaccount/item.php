@@ -35,7 +35,7 @@ $order_data = $order->get_data();
 			<?php 
 				if($order_data['status'] == 'completed') {
 			?>
-					<a class="zip-design" href="javascript:void(0)" data-href="<?php echo $url_download_zip_design ?>"><?php echo __('Zip Design') ?></a>
+					<a class="zip-design" href="javascript:void(0)" data-href="<?php echo $url_download_zip_design ?>"><?php echo __('Zip Design', 'pdpinteg') ?></a>
 			<?php
 				}
 			?>
