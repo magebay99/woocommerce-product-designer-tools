@@ -1,0 +1,2 @@
+=== WooCommerce PDP Integration ===
+

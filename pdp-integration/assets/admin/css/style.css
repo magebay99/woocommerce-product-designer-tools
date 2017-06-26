@@ -1,0 +1,35 @@
+/**/
+.block-button a.edit-button{
+  border-radius: 3px;
+  background-color: rgb( 49, 181, 115 );
+  padding:0 15px;
+  height: 35px;
+  line-height: 35px;
+  z-index: 4;
+  font-size: 15px;
+  color: rgb( 255, 255, 255 );
+  display: inline-block;
+  width:120px;
+    text-align:center;
+  white-space:nowrap;
+  text-decoration: none;
+}
+.pdp-hide-item{
+	display: none;
+}
+.block-button a.zip-design{
+  border-radius: 3px;
+  margin:5px 0px;
+  background-color: rgb( 63, 188, 239 );
+  padding:0 15px;
+  height: 35px;
+  line-height: 35px;
+  z-index: 4;
+  font-size: 15px;
+  color: rgb( 255, 255, 255 );
+  display:inline-block;
+  text-align:center;
+  white-space:nowrap;
+    width:120px;
+    text-decoration: none;
+}
