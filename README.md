@@ -18,11 +18,11 @@ Helpful links:
 1. Download and upload plygin into folder /wp-content/plugins
 
 2. active plugin 
-![Alt text](http://prntscr.com/fulbvw)
-![Alt text](http://prntscr.com/fulc32)
+![Alt text](http://prntscr.com/fulbvw "active plugin")
+![Alt text](http://prntscr.com/fulc32 "active plugin 1")
 
 3. Config plugin in Woocommerce Backend
-![Alt text](http://prntscr.com/ful7y9)
+![Alt text](http://prntscr.com/ful7y9 "config plugin")
 
 # One click to push products from PDP to Woocommerce
 
@@ -32,17 +32,17 @@ Helpful links:
 
 - Enter API access information to connect with Woocommerce(it can be Woocommerce admin access)
 
-![Alt text](http://prntscr.com/fulcae)
+![Alt text](http://prntscr.com/fulcae "Integrate with woocommerce")
 
 2. Push products into Woocommerce for ready to sell.
 
 - Push single product to Woocommerce
 
-![Alt text](http://prntscr.com/fulcx8)
+![Alt text](http://prntscr.com/fulcx8 "push single product")
 
 - Push multiple products
 
-![Alt text](http://prntscr.com/fuld7z)
+![Alt text](http://prntscr.com/fuld7z "push multiple product")
 
 After products are pushed succesful, all these items status will be change to LIVE in #PDP, and ready for sell on Woocommerce.
 
