@@ -15,13 +15,15 @@ Helpful links:
 
 # Installation Guide
 
-1. Download and upload plygin into folder /wp-content/plugins
-
+1. Download and upload plugin into folder /wp-content/plugins
 2. active plugin 
+
 ![Alt text](https://image.prntscr.com/image/zUWw0ajeS06tO-TDNXcBzQ.png "active plugin")
+
 ![Alt text](https://image.prntscr.com/image/g0gX_JnMTxyBgqoQvrULNQ.png "active plugin 1")
 
 3. Config plugin in Woocommerce Backend
+
 ![Alt text](https://image.prntscr.com/image/8hwUInxzToOhzlKX1NBoTg.png "config plugin")
 
 # One click to push products from PDP to Woocommerce
