@@ -52,6 +52,14 @@ class PDP_Helper {
 	}
 	
 	/**
+     * Retrieve true if Using popup for design
+     * @return boolean
+	 */
+	public function use_popup_design() {
+		return  isset($this->options['use_popup_design'])?(bool)$this->options['use_popup_design']: false;
+	}	
+	
+	/**
 	 * Retrieve label button design
 	 * @return string
 	 */

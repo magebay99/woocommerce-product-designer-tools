@@ -103,6 +103,19 @@ if ( ! class_exists( 'PDP_Integration_Settings' ) ) {
 					'id'			=> 'label_custom',
 				)
 			);
+
+			add_settings_field(
+				'use_popup_design',
+				__( 'Use Popup for Design', 'pdpinteg' ),
+				array( &$this, 'checkbox_element_callback' ),
+				$option,
+				'plugin_settings',
+				array(
+					'menu'			=> $option,
+					'id'			=> 'use_popup_design',
+					'description'	=> __( 'Using Popup for design product', 'pdpinteg' ),
+				)
+			);
 			
 			// Register settings.
 			register_setting( $option, $option, array( &$this, 'validate_options' ) );
@@ -204,7 +217,8 @@ if ( ! class_exists( 'PDP_Integration_Settings' ) ) {
 		public function default_settings( $option ) {
 			$default = array(
 				'api_ajaxcart'	=> '1',
-				'label_custom' => __('Customize It', 'pdpinteg')
+				'label_custom' => __('Customize It', 'pdpinteg'),
+				'use_popup_design' => '0'
 			);
 			update_option( $option, $default );
 		}
