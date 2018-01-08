@@ -116,6 +116,19 @@ if ( ! class_exists( 'PDP_Integration_Settings' ) ) {
 					'description'	=> __( 'Using Popup for design product', 'pdpinteg' ),
 				)
 			);
+                        
+                        add_settings_field(
+				'separate_db',
+				__( 'Separate Database with store', 'pdpinteg' ),
+				array( &$this, 'checkbox_element_callback' ),
+				$option,
+				'plugin_settings',
+				array(
+					'menu'			=> $option,
+					'id'			=> 'separate_db',
+					'description'	=> __( 'Separate Database with store', 'pdpinteg' ),
+				)
+			);
 			
 			// Register settings.
 			register_setting( $option, $option, array( &$this, 'validate_options' ) );
@@ -218,7 +231,8 @@ if ( ! class_exists( 'PDP_Integration_Settings' ) ) {
 			$default = array(
 				'api_ajaxcart'	=> '1',
 				'label_custom' => __('Customize It', 'pdpinteg'),
-				'use_popup_design' => '0'
+				'use_popup_design' => '0',
+				'separate_db' => '1'
 			);
 			update_option( $option, $default );
 		}
