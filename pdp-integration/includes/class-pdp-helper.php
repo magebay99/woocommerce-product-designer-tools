@@ -58,6 +58,14 @@ class PDP_Helper {
 	public function use_popup_design() {
 		return  isset($this->options['use_popup_design'])?(bool)$this->options['use_popup_design']: false;
 	}	
+        
+        /**
+     * Retrieve true if Using same database with store
+     * @return boolean
+	 */
+	public function check_is_same_db() {
+		return  isset($this->options['separate_db'])?(bool)$this->options['separate_db']: false;
+	}	
 	
 	/**
 	 * Retrieve label button design

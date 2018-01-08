@@ -87,10 +87,10 @@ class PDP_Cart {
 					$html .= '<ul class="items">';
 					$i=0;
 					foreach($side_thubms as $side_thumb) {
-						if($side_thumb['thumb']) {
+						if($side_thumb->thumb) {
 							$i++;
 							$last = $i%2==0?'last':'';
-							$html .= '<li style="display:inline-block;margin-right:5px;" class="item '.$last.'"><a href="'.$url_tool.'/'.$side_thumb['thumb'].'" target="_blank"><img style="border:1px solid #C1C1C1;" width="66" src="'.$url_tool.'/'.$side_thumb['thumb'].'" /></a></li>';
+							$html .= '<li style="display:inline-block;margin-right:5px;" class="item '.$last.'"><a href="'.$url_tool.'/'.$side_thumb->thumb.'" target="_blank"><img style="border:1px solid #C1C1C1;" width="66" src="'.$url_tool.'/'.$side_thumb->thumb.'" /></a></li>';
 						}
 					}
 					$html .= '</ul></div>';
