@@ -17,7 +17,7 @@ class PDP_Product_Type {
      * Ensures only one instance of plugin is loaded or can be loaded.
      */
     public static function instance() {
-        if (is_null(self::$_instance)) {
+        if (is_null(self::$_instance)) { 
             self::$_instance = new self();
         }
         return self::$_instance;
@@ -31,7 +31,7 @@ class PDP_Product_Type {
         $isSameDb = PDP_Helper::instance()->check_is_same_db();
         if ($isSameDb) {
             $pdpUrl = PDP_Helper::instance()->get_url_tool_design();
-            $request = wp_remote_get($pdpUrl.'/rest/commerce?product&sku='.$sku);
+            $request = wp_remote_get(rtrim($pdpUrl,'/').'/rest/commerce?product&sku='.$sku);
             if (is_wp_error($request)) {
                 return false; // Bail early
             }

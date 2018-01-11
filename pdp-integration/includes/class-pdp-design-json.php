@@ -31,7 +31,7 @@ class PDP_Design_Json {
         $isSameDb = PDP_Helper::instance()->check_is_same_db();
         if ($isSameDb) {
             $pdpUrl = PDP_Helper::instance()->get_url_tool_design();
-            $request = wp_remote_get($pdpUrl . '/rest/commerce?design&params_id='.$design_id);
+            $request = wp_remote_get(rtrim($pdpUrl,'/'). '/rest/commerce?design&params_id='.$design_id);
             if (is_wp_error($request)) {
                 return false; // Bail early
             }
@@ -43,7 +43,7 @@ class PDP_Design_Json {
                 } else {
                     return [];
                 }
-            }
+            } 
         } else {
             global $wpdb;
             $table_name = "pdp_design_json";
