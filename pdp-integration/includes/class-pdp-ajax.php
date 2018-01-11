@@ -3,7 +3,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 class PDP_AJAX {
 	
 	protected static $_instance = null;
@@ -25,27 +24,60 @@ class PDP_AJAX {
 	 */
 	public function init() {
 		//add_action( 'init', array( $this, 'register_routes' ) );
+//		add_action( 'send_headers', 'pdp_send_cors_headers' );
 		add_action( 'template_redirect', array( __CLASS__, 'do_pdp_ajax' ), 1 );
 		self::add_ajax_events();
 	}
-	
-	/**
+        
+        
+
+    /**
 	 * Send headers for WC Ajax Requests.
 	 *
 	 * @since 2.5.0
 	 */
 	private static function pdp_ajax_headers() {
-		send_origin_headers();
-		@header( 'Content-Type: text/html; charset=' . get_option( 'blog_charset' ) );
+//		send_origin_headers();
+//		@header( 'Content-Type: text/html; charset=' . get_option( 'blog_charset' ) );
+                self::setOriginResponseHeader();
 		@header( 'X-Robots-Tag: noindex' );
 		send_nosniff_header();
 		nocache_headers();
 		status_header( 200 );
 	}
-	/**
+        
+         /**
+            * Get all header which is sent by client
+            * @return array
+            */
+           public static function getRequestHeaders() {
+               $missed = array('CONTENT_LENGTH');
+               $headers = array();
+               foreach ($_SERVER as $key => $value) {
+                   if (substr($key, 0, 5) <> 'HTTP_' && !in_array($key, $missed)) {
+                       continue;
+                   }
+                   $orgHeader = in_array($key, $missed) ? $key : substr($key, 5);
+                   $orgHeader = strtolower($orgHeader);
+                   $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', $orgHeader)));
+                   $headers[$header] = $value;
+               }
+               return $headers;
+           }
+
+           public static function setOriginResponseHeader() {
+               header('Content-Type: application/json');
+               header('Access-Control-Allow-Origin: ' . get_http_origin());
+               header('Access-Control-Allow-Headers: Content-Type,' . implode(', ', array_keys(self::getRequestHeaders())));
+               header('Access-Control-Allow-Methods: POST, PUT, DELETE, GET, OPTIONS');
+               header('Access-Control-Allow-Credentials: true');
+           }
+
+    /**
 	 * Hook in methods - uses WordPress ajax handlers (admin-ajax).
 	 */
 	public static function add_ajax_events() {
+                
 		// woocommerce_EVENT => nopriv
 		$ajax_events = array(
 			'add_to_cart'                                      => true,
@@ -64,7 +96,6 @@ class PDP_AJAX {
 	 */
 	public static function do_pdp_ajax() {
 		global $wp_query;
-		
 		if ( ! empty( $_GET['pdp-ajax'] ) ) {
 			$wp_query->set( 'pdp-ajax', sanitize_text_field( $_GET['pdp-ajax'] ) );
 		}
@@ -172,7 +203,7 @@ class PDP_AJAX {
 								}
 							}
 						}
-					}
+					} 
 					$data['status'] = true;
 					$data['message'] = __('Add guest design success!', 'pdpinteg');
 				} else {
@@ -189,10 +220,11 @@ class PDP_AJAX {
 		}
 		wp_send_json( $data );
 	}
+        
 	
 	/**
-	 * AJAX add to cart.
-	 */
+	 * AJAX add to cart. 
+	 */ 
 	public static function add_to_cart() {
 		ob_start();
 		$status_api = PDP_Helper::instance()->status_pdp_integration();
@@ -220,7 +252,7 @@ class PDP_AJAX {
 									WC()->cart->remove_cart_item( $cart_item_key );
 								}
 							}
-							if( false !== WC()->cart->add_to_cart( $product_id, $quantity, 0, array(),  $cart_item_data) ) {
+                                                        if( false !== WC()->cart->add_to_cart( $product_id, $quantity, 0, array(),  $cart_item_data) ) {
 								$data = array('status' => true, 'message' => __('Add product to cart Woocommerce success!', 'pdpinteg'), 'url' => WC()->cart->get_cart_url());
 								do_action( 'pdp_api_added_to_cart', $product_id );
 							} else {

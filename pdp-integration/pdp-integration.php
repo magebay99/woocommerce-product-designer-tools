@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or exit;
 if ( !class_exists( 'PDP_Integration' ) ) {
 	class PDP_Integration {
 		
-		public static $plugin_slug;
+		public static $plugin_slug; 
 		public static $plugin_prefix;
 		public static $plugin_url;
 		public static $plugin_path;
