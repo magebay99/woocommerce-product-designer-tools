@@ -55,7 +55,10 @@ class PDP_Order_Item {
 			if(strpos($meta->display_key, 'pdpoptions_pdp_print_type') !== false || strpos($meta->display_key, 'pdpoptions_product_color') !== false){
 				$pdpValue = maybe_unserialize(strip_tags($meta->display_value));
 				$strings[] = '<strong class="wc-item-meta-label">' .  $pdpValue['label']  . ':</strong> ' . $pdpValue['value'];
-			} elseif( $meta->display_key == 'pdpoptions' ) {
+			}elseif(strpos($meta->display_key, 'pdpoptions_custom_size_width') !== false || strpos($meta->display_key, 'pdpoptions_custom_size_height') !== false || strpos($meta->display_key, 'pdpoptions_custom_size_layout') !== false){
+                            $pdpValue = maybe_unserialize(strip_tags($meta->display_value));
+                            $strings[] = '<strong class="wc-item-meta-label">' .  $pdpValue['label']  . ':</strong> ' . $pdpValue['value'];
+                        } elseif( $meta->display_key == 'pdpoptions' ) {
 				$_pdpValue = maybe_unserialize(strip_tags($meta->display_value));
 				foreach( $_pdpValue as $pdpValue) {
 					$strings[] = '<strong class="wc-item-meta-label">' .  $pdpValue['label']  . ':</strong> ' . $pdpValue['value'];

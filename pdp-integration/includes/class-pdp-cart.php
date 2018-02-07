@@ -57,6 +57,15 @@ class PDP_Cart {
 				$html .= '<dt>'.$_item_values['label'].'</dt>';
 				$html .= '<dd>'.$_item_values['value'].'</dd>';
 				continue;
+			}elseif( strpos($key, 'pdpoptions_custom_size_width') !== false || strpos($key, 'pdpoptions_custom_size_height') !== false || strpos($key, 'pdpoptions_custom_size_layout') !== false ) {
+				$_item_values = maybe_unserialize($value);
+				if($tag) {
+					$html .= '<dl class=\'variation item-options\'>';
+					$tag = false;
+				}
+				$html .= '<dt>'.$_item_values['label'].'</dt>';
+				$html .= '<dd>'.$_item_values['value'].'</dd>';
+				continue;
 			} elseif( $key == 'pdpoptions' ) {
 				$__item_values = maybe_unserialize($value);
 				if($tag) {
@@ -135,6 +144,24 @@ class PDP_Cart {
 				if( isset($productColor['color_price']) && $productColor['color_price'] ) {
 					$custom_price += $productColor['color_price'];
 				}
+			}
+                        
+                        if(isset($request['custom_size'])) {
+				$customSize = $request['custom_size'];
+                                if($customSize['unit']){
+                                    $unit = $customSize['unit'];
+                                }else{
+                                    $unit='';
+                                }
+                                if($customSize['width']){
+                                    $new_value['pdpoptions_custom_size_width'] = maybe_serialize(array('label' => __('Width', 'pdpinteg'), 'value' => __($customSize['width'].$unit, 'pdpinteg')));
+                                }
+                                if($customSize['height']){
+                                    $new_value['pdpoptions_custom_size_height'] = maybe_serialize(array('label' => __('Height', 'pdpinteg'), 'value' => __($customSize['height'].$unit, 'pdpinteg')));
+                                }
+                                if($customSize['size_layout']){
+                                    $new_value['pdpoptions_custom_size_layout'] = maybe_serialize(array('label' => __('Size layout', 'pdpinteg'), 'value' => __($customSize['size_layout'], 'pdpinteg')));
+                                }
 			}
 			
 			if(isset($request['pdp_options'])) {

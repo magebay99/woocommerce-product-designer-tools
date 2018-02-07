@@ -117,12 +117,12 @@ class PDP_AJAX {
 		$_request = json_decode(file_get_contents('php://input'), true);
 		if(isset($_request['pdpDesignItem'])) {
 			$request = $_request['pdpDesignItem'];
-			if(isset($request['product_id']) && isset($request['product_sku'])) {
+			if(isset($request['design_id']) && isset($request['product_sku'])) {
 				$product_sku = wc_clean( $request['product_sku'] );
 				$product_id  = wc_get_product_id_by_sku( $product_sku );
 				$item_value = array(
 					'product_id' => $product_id,
-					'pdp_product_id' => $request['product_id'],
+					'pdp_product_id' => $request['product_id']?$request['product_id']:$product_id,
 					'design_id' => $request['design_id']
 				);
 				if($product_id) {
@@ -233,7 +233,7 @@ class PDP_AJAX {
 			$_request = json_decode(file_get_contents('php://input'), true);
 			if(isset($_request['pdpItem'])) {
 				$request = $_request['pdpItem'];
-				if(isset($request['entity_id']) && isset($request['sku']) && isset($request['design_id'])) {
+				if((isset($request['entity_id']) && isset($request['sku']) && isset($request['design_id'])) || (isset($request['sku']) && isset($request['custom_size']))) {
 					$product_sku = wc_clean( $request['sku'] );
 					$product_id  = wc_get_product_id_by_sku( $product_sku );
 					if ( $product_id ) {

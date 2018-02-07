@@ -30,7 +30,11 @@ $download_design = '';
                     <?php
                     if (strpos($meta->display_key, 'pdpoptions_pdp_print_type') !== false || strpos($meta->display_key, 'pdpoptions_product_color') !== false) {
                         $_item_values = maybe_unserialize(strip_tags($meta->display_value));
-
+                        $html = '<th>' . $_item_values['label'] . ':</th>';
+                        $html .= '<td>' . $_item_values['value'] . '</td>';
+                        echo $html;
+                    }elseif(strpos($meta->display_key, 'pdpoptions_custom_size_width') !== false || strpos($meta->display_key, 'pdpoptions_custom_size_height') !== false || strpos($meta->display_key, 'pdpoptions_custom_size_layout') !== false){
+                        $_item_values = maybe_unserialize(strip_tags($meta->display_value));
                         $html = '<th>' . $_item_values['label'] . ':</th>';
                         $html .= '<td>' . $_item_values['value'] . '</td>';
                         echo $html;
