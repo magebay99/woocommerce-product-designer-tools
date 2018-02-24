@@ -57,7 +57,7 @@ class PDP_Cart {
 				$html .= '<dt>'.$_item_values['label'].'</dt>';
 				$html .= '<dd>'.$_item_values['value'].'</dd>';
 				continue;
-			}elseif( strpos($key, 'pdpoptions_custom_size_width') !== false || strpos($key, 'pdpoptions_custom_size_height') !== false || strpos($key, 'pdpoptions_custom_size_layout') !== false ) {
+			}elseif( strpos($key, 'pdpoptions_custom_size_width') !== false || strpos($key, 'pdpoptions_custom_size_height') !== false || strpos($key, 'pdpoptions_custom_size_layout') !== false  || strpos($key, 'pdpoptions_multi_size') !== false) {
 				$_item_values = maybe_unserialize($value);
 				if($tag) {
 					$html .= '<dl class=\'variation item-options\'>';
@@ -121,7 +121,6 @@ class PDP_Cart {
 	 */
 	public static function prepare_cart_item_data($request, $product_id) {
 		$cart_item_data = array();
-		
 		if(!empty($request)) {
 			$new_value = array();
 			$pdpData = array();
@@ -129,16 +128,29 @@ class PDP_Cart {
 				$pdpData['design_url'] = $request['design_url'];
 			}
 			$custom_price = 0;
-			if(isset($request['pdp_print_type'])) {
-				$print_type = $request['pdp_print_type'];
-				if(isset($print_type['value']) && isset($print_type['title']) && $print_type['value'] && $print_type['title']) {
-					$new_value['pdpoptions_pdp_print_type'] = maybe_serialize(array('label' => __('Print type', 'pdpinteg'), 'value' => __($print_type['title'], 'pdpinteg')));
-				}
-				if(isset($print_type['price'])) {
-					$custom_price += $print_type['price'];
-				}
-			}
-			if(isset($request['product_color'])) {
+                        if(isset($request['side_price'])) {
+                            $custom_price += $request['side_price'];
+                        }
+                        if(isset($request['multi_size_price'])) {
+                            $custom_price += $request['multi_size_price'];
+                        }
+			if (isset($request['pdp_print_type'])) {
+                            if(isset($request['multi_size']) && $request['multi_size']) {
+                                $print_type = $request['pdp_print_type'];
+                                if (isset($print_type['value']) && isset($print_type['title']) && $print_type['value'] && $print_type['title']) {
+                                    $new_value['pdpoptions_pdp_print_type'] = maybe_serialize(array('label' => __('Print type', 'pdpinteg'), 'value' => __($print_type['title'], 'pdpinteg')));
+                                }
+                            } else {
+                                $print_type = $request['pdp_print_type'];
+                                if (isset($print_type['value']) && isset($print_type['title']) && $print_type['value'] && $print_type['title']) {
+                                    $new_value['pdpoptions_pdp_print_type'] = maybe_serialize(array('label' => __('Print type', 'pdpinteg'), 'value' => __($print_type['title'], 'pdpinteg')));
+                                }
+                                if (isset($print_type['price'])) {
+                                    $custom_price += $print_type['price'];
+                                }
+                            }
+                        }
+                        if(isset($request['product_color'])) {
 				$productColor = $request['product_color'];
 				$new_value['pdpoptions_product_color'] = maybe_serialize(array('label' => __('Color', 'pdpinteg'), 'value' => __($productColor['color_name'], 'pdpinteg')));
 				if( isset($productColor['color_price']) && $productColor['color_price'] ) {
@@ -163,6 +175,10 @@ class PDP_Cart {
                                     $new_value['pdpoptions_custom_size_layout'] = maybe_serialize(array('label' => __('Size layout', 'pdpinteg'), 'value' => __($customSize['size_layout'], 'pdpinteg')));
                                 }
 			}
+                        
+                        if(isset($request['multi_size_size'])) {
+                            $new_value['pdpoptions_multi_size'] = maybe_serialize(array('label' => __('Size', 'pdpinteg'), 'value' => __($request['multi_size_size'], 'pdpinteg')));
+                        }
 			
 			if(isset($request['pdp_options'])) {
 				$pdp_helper = PDP_Helper::instance();
@@ -175,13 +191,13 @@ class PDP_Cart {
 				}
 				$new_value['pdpoptions'] = maybe_serialize($additionalOptions);
 			}
-			
 			$pdpData['custom_price'] = $custom_price;
 			if( isset($request['design_id']) ) {
 				$pdpData['design_id'] = $request['design_id'];
 				$new_value['pdpData'] = maybe_serialize($pdpData);
 				$new_value['pdp_design'.$pdpData['design_id']] = $pdpData['design_id'];
 			}
+                        
 			return array_merge($cart_item_data,$new_value);
 		}
 		return $cart_item_data;
@@ -192,7 +208,8 @@ class PDP_Cart {
 	 * @return void
 	 */
 	public static function add_custom_price( $cart_object ) {
-		$custom_price = 0;
+            if(!WC()->session->__isset("reload_checkout")) {
+	    	$custom_price = 0;
 		foreach ( $cart_object->cart_contents as $key => $value ) {
 			if(is_array($value)) {
 				foreach($value as $_key => $_val) {
@@ -200,12 +217,13 @@ class PDP_Cart {
 						$pdpData = maybe_unserialize($value[$_key]);
 						$custom_price = $pdpData['custom_price'];
 						if($custom_price) {
-							$custom_price += $value['data']->get_price();
+							$custom_price += $value['data']->get_regular_price();
 							$value['data']->set_price( $custom_price );
 						}
 					}
 				}
 			}
 		}
+            }
 	}
 }

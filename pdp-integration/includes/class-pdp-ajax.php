@@ -156,7 +156,7 @@ class PDP_AJAX {
 									$guest_design->update_guest_design_by_user_id( $dataguestdesign, $user_id );
 								}
 							} else {
-								$dataguestdesign['customer_is_guest'] = 0;
+								$dataguestdesign['customer_is_guest'] = 0; 
 								$dataguestdesign['item_value'] = maybe_serialize([$item_value]);
 								$guest_design->insert_guest_design( $dataguestdesign );
 							}
@@ -244,21 +244,124 @@ class PDP_AJAX {
 							} else {
 								$quantity = 1;
 							}
-							//$cart_item_data = (array) apply_filters('pdp_api_add_item_cart', $request, $product_id);
-							$cart_item_data = PDP_Cart::prepare_cart_item_data( $request, $product_id );
-							if(isset($request['item_id'])) {
-								$cart_item_key = sanitize_text_field( $request['item_id'] );
-								if ( $cart_item = WC()->cart->get_cart_item( $cart_item_key ) ) {
-									WC()->cart->remove_cart_item( $cart_item_key );
-								}
-							}
-                                                        if( false !== WC()->cart->add_to_cart( $product_id, $quantity, 0, array(),  $cart_item_data) ) {
-								$data = array('status' => true, 'message' => __('Add product to cart Woocommerce success!', 'pdpinteg'), 'url' => WC()->cart->get_cart_url());
-								do_action( 'pdp_api_added_to_cart', $product_id );
-							} else {
-								$data['status'] = false;
-								$data['message'] = __('can not add product to cart', 'pdpinteg');
-							}							
+                                                        if(isset($request['multi_size']) && $request['multi_size']) {
+                                                            if(isset($request['pdp_print_type'])) {
+                                                                $pdp_print_type = $request['pdp_print_type'];
+                                                                if(isset($request['pdp_print_type']['price_multi_size'])) {
+                                                                    $__price_multi_size = array();
+                                                                    foreach($request['pdp_print_type']['price_multi_size'] as $_val) {
+                                                                            if(isset($_val['size']) && isset($_val['price'])) {
+                                                                                    if(isset($__price_multi_size[$_val['size']])) {
+                                                                                            $__price_multi_size[$_val['size']] += $_val['price'];
+                                                                                    } else {
+                                                                                            $__price_multi_size[$_val['size']] = $_val['price'];
+                                                                                    }
+                                                                            }
+                                                                    }
+                                                                    $pdp_print_type['price_multi_size'] = $__price_multi_size;
+                                                                }
+                                                                $request['pdp_print_type']=$pdp_print_type;
+                                                            }
+                                                            $multi_size = array();
+                                                            $price_multi_size = array();
+                                                            foreach($request['multi_size'] as $sz_key => $sz_val) {
+                                                                    $multi_size_item = array(
+                                                                            //'name' => isset($sz_val['name']) ? $sz_val['name'] : '', 
+                                                                            //'num' => isset($sz_val['num']) ? $sz_val['num'] : '',
+                                                                            'qty' => isset($sz_val['qty']) ? $sz_val['qty'] : 1,
+                                                                            'size' => isset($sz_val['size']) ? ucfirst($sz_val['size']) : '',
+                                                                            'price' => isset($sz_val['price']) ? $sz_val['price'] : 0
+                                                                    );
+                                                                    if (isset($sz_val['name']) && isset($sz_val['num'])) {
+                                                                            $usedNameNum = true;
+                                                                            $multi_size_item['name'] = $sz_val['name'];
+                                                                            $multi_size_item['num'] = $sz_val['num'];
+                                                                    }
+                                                                    if(isset($sz_val['size'])) {
+                                                                            if (isset($multi_size[$sz_val['size']]) && count($multi_size[$sz_val['size']])) {
+                                                                                    $flag_exist = true;
+                                                                                    foreach($multi_size[$sz_val['size']] as $size_key => $item_name_size) {
+                                                                                            if (!$usedNameNum) {
+                                                                                                    break;
+                                                                                            }
+                                                                                            if (isset($item_name_size['name']) && isset($item_name_size['num']) ) {
+                                                                                                    if ($item_name_size['name'] === $multi_size_item['name'] && $item_name_size['num'] === $multi_size_item['num']) {
+                                                                                                            $multi_size[$sz_val['size']][$size_key]['qty'] = $item_name_size['qty'] + $multi_size_item['qty'];
+                                                                                                            $flag_exist = false;
+                                                                                                            break;
+                                                                                                    }
+                                                                                            }
+                                                                                    }
+                                                                                    if ($flag_exist) {
+                                                                                            $multi_size[$sz_val['size']][] = $multi_size_item;
+                                                                                    }
+                                                                            } else {
+                                                                                    $multi_size[$sz_val['size']][] = $multi_size_item;
+                                                                            }
+
+                                                                            if(!isset($price_multi_size[$sz_val['size']])) {
+                                                                                    if(isset($sz_val['price']) && $sz_val['price']) {
+                                                                                            $price_multi_size[$sz_val['size']] = $sz_val['price'];
+                                                                                    }
+                                                                            }
+                                                                    }
+                                                            }
+                                                            if(count($multi_size)) {
+                                                                foreach($multi_size as $mtize_key => $mtize_val){
+                                                                    $multi_size_price=0;
+                                                                    if (isset($pdp_print_type['price_multi_size']) && count($pdp_print_type['price_multi_size'])) {
+                                                                        if (isset($pdp_print_type['price_multi_size'][$mtize_key])) {
+                                                                            $multi_size_price += $pdp_print_type['price_multi_size'][$mtize_key];
+                                                                        }
+                                                                    }
+                                                                    $request['multi_size_size']=$mtize_key;
+                                                                    $request['multi_size_price']=$multi_size_price;
+                                                                    $cart_item_data = PDP_Cart::prepare_cart_item_data( $request, $product_id );
+                                                                    $multi_size_qty = 0;
+                                                                    if(count($mtize_val) > 1) {
+                                                                            foreach($mtize_val as $mtize_val_val) {
+                                                                                    if(isset($mtize_val_val['qty'])) {
+                                                                                            $multi_size_qty = $multi_size_qty + $mtize_val_val['qty'];
+                                                                                    } else {
+                                                                                            $multi_size_qty = 1;
+                                                                                    }
+                                                                            }
+                                                                    } else {
+                                                                            $multi_size_qty = isset($mtize_val[0]['qty'])?$mtize_val[0]['qty']:1;
+                                                                    }
+                                                                    if(isset($request['item_id'])) {
+                                                                        $cart_item_key = sanitize_text_field( $request['item_id'] );
+                                                                        if ( $cart_item = WC()->cart->get_cart_item( $cart_item_key ) ) {
+                                                                                WC()->cart->remove_cart_item( $cart_item_key );
+                                                                        }
+                                                                    }
+                                                                    if( false !== WC()->cart->add_to_cart( $product_id, $multi_size_qty, 0, array(),  $cart_item_data) ) {
+//                                                                        
+                                                                    } else {
+                                                                            $data['status'] = false;
+                                                                            $data['message'] = __('can not add product to cart', 'pdpinteg');
+                                                                    }	
+                                                                };
+                                                                $data = array('status' => true, 'message' => __('Add product to cart Woocommerce success!', 'pdpinteg'), 'url' => WC()->cart->get_cart_url());
+                                                                do_action( 'pdp_api_added_to_cart', $product_id );
+                                                            }
+                                                        }else{
+                                                            //$cart_item_data = (array) apply_filters('pdp_api_add_item_cart', $request, $product_id);
+                                                            $cart_item_data = PDP_Cart::prepare_cart_item_data( $request, $product_id );
+                                                            if(isset($request['item_id'])) {
+                                                                    $cart_item_key = sanitize_text_field( $request['item_id'] );
+                                                                    if ( $cart_item = WC()->cart->get_cart_item( $cart_item_key ) ) {
+                                                                            WC()->cart->remove_cart_item( $cart_item_key );
+                                                                    }
+                                                            }
+                                                            if( false !== WC()->cart->add_to_cart( $product_id, $quantity, 0, array(),  $cart_item_data) ) {
+                                                                    $data = array('status' => true, 'message' => __('Add product to cart Woocommerce success!', 'pdpinteg'), 'url' => WC()->cart->get_cart_url());
+                                                                    do_action( 'pdp_api_added_to_cart', $product_id );
+                                                            } else {
+                                                                    $data['status'] = false;
+                                                                    $data['message'] = __('can not add product to cart', 'pdpinteg');
+                                                            }	
+                                                        }
 						} else {
 							$data['status'] = false;
 							$data['message'] = __('can not add product to cart. Product not publish', 'pdpinteg');
