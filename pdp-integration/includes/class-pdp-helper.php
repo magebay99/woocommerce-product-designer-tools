@@ -88,7 +88,7 @@ class PDP_Helper {
 		$url_tool = $this->get_url_tool_design();
 		$param = '';
 		if($design_id) {
-			$param .= 'rest/design-download?id='.$design_id.'&zip=1';
+			$param .= 'rest/design-download?id='.$design_id.'&zip=1&format=pdf';
 		} else {
 			$param = '#';
 		}
@@ -280,7 +280,7 @@ class PDP_Helper {
 	 *
 	 * @return array()
      */		
-    public function get_optinfor_request( array $options) {
+    public function get_optinfor_request( array $options,$quantity) {
 		$infoRequest = array(
 			'pdp_options' => array(),
 			'pdp_price' => 0
@@ -295,15 +295,33 @@ class PDP_Helper {
 					$qty_input = true;
 				}
 				foreach($val['values'] as $_key => $_val) {
-					if(intval($_val['checked']) && $_val['selected'] && !$_val['disabled']) {
-						$value[] = $_val['option_type_id'];
-						if(intval($_val['qty']) > 1 && $qty_input) {
-							$pdpPrice = $pdpPrice + floatval($_val['price'])*intval($_val['qty']);
-						} else {
-							$pdpPrice += floatval($_val['price']);
-						}
-					}
-				}
+                                    if (intval($_val['checked']) && $_val['selected'] && !$_val['disabled']) {
+                                        $value[] = $_val['option_type_id'];
+                                        if ($_val['tiers'] && count($_val['tiers']) > 0) {
+                                            $tier_value_price_add = floatval($_val['price']);
+                                            for ($i = 0; $i < count($_val['tiers']); $i++) {
+                                                if ($_val['tiers'][$i]) {
+                                                    $tier_value_price = floatval($_val['tiers'][$i]['price']);
+                                                    $tier_value_qty = intval($_val['tiers'][$i]['qty']);
+                                                    if ($quantity >= $tier_value_qty) {
+                                                        $tier_value_price_add = $tier_value_price;
+                                                    }
+                                                }
+                                            };
+                                            if (intval($_val['qty']) > 1 && $qty_input) {
+                                                $pdpPrice = $pdpPrice + $tier_value_price_add * intval($_val['qty']);
+                                            } else {
+                                                $pdpPrice += $tier_value_price_add;
+                                            }
+                                        } else {
+                                            if (intval($_val['qty']) > 1 && $qty_input) {
+                                                $pdpPrice = $pdpPrice + floatval($_val['price']) * intval($_val['qty']);
+                                            } else {
+                                                $pdpPrice += floatval($_val['price']);
+                                            }
+                                        }
+                                    }
+                                }
 				$infoRequest['pdp_options'][$optId] = implode(",", $value);
 			} elseif($val['type'] == 'field' || $val['type'] == 'area') {
 				if($val['default_text']) {

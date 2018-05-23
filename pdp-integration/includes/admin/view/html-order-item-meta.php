@@ -47,7 +47,12 @@ $download_design = '';
                             echo $html;
                         }
                     } elseif (strpos($meta->display_key, 'pdpData') !== false) {
-                        $pdp_data = maybe_unserialize(strip_tags($meta->display_value));
+                        //php 7
+                        $data = preg_replace_callback ( '!s:(\d+):"(.*?)";!', function($match) {      
+                            return ($match[1] == strlen($match[2])) ? $match[0] : 's:' . strlen($match[2]) . ':"' . $match[2] . '";';
+                        },strip_tags($meta->display_value) );
+//                        $data = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", strip_tags($meta->display_value));
+                        $pdp_data = maybe_unserialize($data);
                         if (isset($pdp_data['design_id'])) {
                             $designId=$pdp_data['design_id'];
                             $sku_product = $item->get_product()->get_sku();

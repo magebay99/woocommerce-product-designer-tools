@@ -184,7 +184,7 @@ class PDP_Cart {
 				$pdp_helper = PDP_Helper::instance();
 				$_pdpOptSelect = $pdp_helper->get_options_select($request['pdp_options']);
 				$pdpOptSelect = $_pdpOptSelect['options'];
-				$infoRequest = $pdp_helper->get_optinfor_request($pdpOptSelect);
+				$infoRequest = $pdp_helper->get_optinfor_request($pdpOptSelect,$request['qty']);
 				$additionalOptions = $pdp_helper->get_addition_option($pdpOptSelect);
 				if(isset($infoRequest['pdp_price'])) {
 					$custom_price += $infoRequest['pdp_price'];
