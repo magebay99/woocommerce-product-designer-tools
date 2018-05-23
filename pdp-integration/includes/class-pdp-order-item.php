@@ -64,7 +64,13 @@ class PDP_Order_Item {
 					$strings[] = '<strong class="wc-item-meta-label">' .  $pdpValue['label']  . ':</strong> ' . $pdpValue['value'];
 				}
 			} elseif(strpos($meta->display_key, 'pdpData') !== false) { 
-				$pdp_data = maybe_unserialize(strip_tags($meta->display_value));
+                                //php 7
+                                $data = preg_replace_callback ( '!s:(\d+):"(.*?)";!', function($match) {      
+                                    return ($match[1] == strlen($match[2])) ? $match[0] : 's:' . strlen($match[2]) . ':"' . $match[2] . '";';
+                                },strip_tags($meta->display_value));
+        //                        $data = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", strip_tags($meta->display_value));
+                                $pdp_data = maybe_unserialize($data);
+//				$pdp_data = maybe_unserialize(strip_tags($meta->display_value));
 				if(isset($pdp_data['design_id'])) {
 					$design_json = PDP_Design_Json::instance()->get_design_by_design_id($pdp_data['design_id']);
 					$url_tool = PDP_Helper::instance()->get_url_tool_design();
